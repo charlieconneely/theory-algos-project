@@ -1,8 +1,9 @@
 #include <stdio.h>
 
-void bin_print(int i)
+void bin_print(unsigned int i)
 {
-  int j = sizeof(int) * 8;
+  // Number of bits in an unsigned integer
+  int j = sizeof(unsigned int) * 8;
 
   int k;
 
@@ -14,10 +15,17 @@ void bin_print(int i)
 
 int main(int argc, char *argv[])
 {
-  int i = 0xf1;
+  // set i to a literal value
+  unsigned int i = 0xffffffff;
+
+  printf("Original:  ");
+  // i in binary
+  bin_print(i);
+  printf("\t%x\t%d\n", i, i);
 
   for (int j = 0; j < 40; j++) {
-    printf("%3d << %2d: ", i, j);
+    printf("%3u << %2d: ", i, j);
+    // i shifted left j times
     bin_print(i << j);
     printf("\n");
   }
