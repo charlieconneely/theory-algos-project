@@ -16,18 +16,23 @@ void bin_print(unsigned int i)
 int main(int argc, char *argv[])
 {
   // set i to a literal value
-  unsigned int i = 0xffffffff;
+  unsigned int i = 0x0f0f0f0f;
 
-  printf("Original:  ");
+  printf("Original:\t");
   // i in binary
   bin_print(i);
-  printf("\t%x\t%d\n", i, i);
+  printf("\t%x\t%u\n", i, i);
 
-  for (int j = 0; j < 40; j++) {
-    printf("%3u << %2d: ", i, j);
-    // i shifted left j times
-    bin_print(i << j);
-    printf("\n");
+  int j = sizeof(unsigned int) * 8; // 32
+
+  for (j--; j >=0; j--) {
+    // 1 shifted j times.
+    bin_print(i << j); printf("\n");
+    // i
+    bin_print(i); printf("\n");
+    printf("-------------------------------- &\n");
+    // (1 shifted left j times) bitwise logical and i
+    bin_print((1 << j) & i); printf("\n\n");
   }
 
   return 0;
