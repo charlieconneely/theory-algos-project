@@ -2,7 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+/*
+  Code and notes adapted from:
+  https://www.gnu.org/software/libc/manual/html_node/Getopt.html
+*/
 int main(int argc, char **argv)
 {
   // flags used to denote which argument was passed in + stop program
@@ -14,9 +17,9 @@ int main(int argc, char **argv)
   int c;
 
   // Set this var to 0 so that getopt will return a '?' if unknown arg is passed in.
-  // Otherwise, getopt will detect opterr to be non-zero and print an error message. 
+  // Otherwise, getopt will detect opterr to be non-zero and print an error message.
   opterr = 0;
-  
+
   // getopt will return -1 when no more arguments are present
   while((c = getopt(argc, argv, "abc:")) != -1)
     switch(c)
@@ -28,7 +31,7 @@ int main(int argc, char **argv)
         bflag = 1;
         break;
       case 'c':
-        // optarg - option argument (set by getopt) 
+        // optarg - option argument (set by getopt)
         cvalue = optarg;
         break;
       case '?':
