@@ -1,6 +1,7 @@
 # Local executables 
 bitoperations
 getoptPractice
+shaFunctions
 
 # Prerequisites
 *.d
