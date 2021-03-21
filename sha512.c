@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#define WORD uint32_t
-#define W 32
+#define WORD uint64_t
+#define W 64
 
 #define ROTL(x,n) (x<<n)|(x>>(W-n))
 #define ROTR(x,n) (x>>n)|(x<<(W-n))

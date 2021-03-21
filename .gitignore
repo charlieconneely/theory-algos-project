@@ -2,6 +2,7 @@
 bitoperations
 getoptPractice
 shaFunctions
+sha512
 
 # Prerequisites
 *.d
