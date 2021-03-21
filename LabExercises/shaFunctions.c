@@ -29,7 +29,7 @@ n is an integer with 0 <= n < w
 #define ROTR(x,n) (x>>n)|(x<<(W-n))
 
 #define CH(x,y,z) (x&y)^(~x&z)
-#define MAJ(x,y,z) (x&y)^(x&z)^(y&z) // check if different for sha512
+#define MAJ(x,y,z) (x&y)^(x&z)^(y&z) 
 #define SHR(x,n) (x>>n)
 
 // sha256
