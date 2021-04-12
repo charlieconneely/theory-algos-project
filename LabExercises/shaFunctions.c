@@ -8,9 +8,9 @@ Complement Operator: ~
 Left-Shift Operator: <<
 Right-Shift Operator: >>
 Bitwise OR: |
-*/ 
+*/
 
-/* 
+/*
 ROTR - Circular Right Shift shift all entries of a tuple to the right, (element at end goes to start)
 ROTRn(x)=(x >> n) v (x << w - n)
 
@@ -29,7 +29,7 @@ n is an integer with 0 <= n < w
 #define ROTR(x,n) (x>>n)|(x<<(W-n))
 
 #define CH(x,y,z) (x&y)^(~x&z)
-#define MAJ(x,y,z) (x&y)^(x&z)^(y&z) 
+#define MAJ(x,y,z) (x&y)^(x&z)^(y&z)
 #define SHR(x,n) (x>>n)
 
 // sha256
@@ -63,7 +63,7 @@ WORD H[] = {
 };
 
 int main(int argc, char *argv[]) {
-    
+
     WORD x = 0xF1234567;
     WORD y = 0x0A0A0A0A;
     WORD z = 0xB0B0B0B0;
@@ -75,10 +75,10 @@ int main(int argc, char *argv[]) {
 
     ans = MAJ(x, y, z);
     printf("MAJ(%08" PF ",%08" PF ",%08" PF ")=%08" PF "\n", x, y, z, ans);
-    
+
     ans = SHR(x, 10);
     printf("SHR(%08" PF ",10)=%08" PF "\n", x, ans);
-    
+
     ans = ROTR(x, 4);
     printf("ROTR %08" PF " -> %08" PF "\n", x, ans);
 

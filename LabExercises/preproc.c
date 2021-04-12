@@ -16,14 +16,14 @@ int main(int argc, char *argv[])
     union Block B;
     // Total number of bits read
     uint64_t nobits = 0;
-    // File pointer for reading 
+    // File pointer for reading
     FILE *f;
     // Open file from cmd line for reading
     f = fopen(argv[1], "r");
     // Number of bytes read
     size_t nobytes;
-    
-    // Try to read 64 bytes 
+
+    // Try to read 64 bytes
     nobytes = fread(B.bytes, 1, 64, f);
     // Tell the cmd line how many we read
     printf("Read %ld bytes.\n", nobytes);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     {
         printf("%08" PF " ", B.words[i]);
         if ((i + 1) % 8 == 0)
-            printf("\n"); 
+            printf("\n");
     }
 
     while(!feof(f)) {
@@ -48,12 +48,12 @@ int main(int argc, char *argv[])
         {
             printf("%08" PF " ", B.words[i]);
             if ((i + 1) % 8 == 0)
-                printf("\n"); 
+                printf("\n");
         }
     }
 
-    fclose(f);  
-    // print total number of bits read. 
+    fclose(f);
+    // print total number of bits read.
     printf("Total bits read: %ld.\n", nobits);
 
     return 0;
