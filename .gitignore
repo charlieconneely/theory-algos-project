@@ -5,6 +5,7 @@ shaFunctions
 preproc
 emptyexec
 sha512
+sha256
 
 # Prerequisites
 *.d
