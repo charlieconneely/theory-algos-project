@@ -6,17 +6,23 @@
 #define W 32
 #define PF PRIX32
 
+// SHA256 works on blocks of 512 bits 
 union Block {
+    // 8 x 64 = 512 - dealing with blocks as bytes 
     BYTE bytes[64];
+    // 32 x 16 = 512 - dealing with blocks as words 
     WORD words[16];
+    // 64 x 8 = 512 - dealing with last 64 bits of last block
     int64_t sixf[8];
 };
 
+// For keeping track of where we are with the input message/padding
 enum Status {
     READ, PAD, END
 };
 
-// get the next block
+// Returns 1 if it created a new block from original message or padding.
+// Returns 0 if all padded message has already been consumed. 
 int nextBlock(FILE *f, union Block *B, enum Status *S, uint64_t *nobits) {
     size_t nobytes;
 
@@ -28,14 +34,16 @@ int nextBlock(FILE *f, union Block *B, enum Status *S, uint64_t *nobits) {
         // calculate the total bits read so far 
         *nobits = *nobits + (8 * nobytes);
         if (nobytes == 64) {
+            // This happens when we can read 64 bytes from f
             return 1;
         } 
         // Enough room for padding
-        else if (nobytes <= 55) {
+        else if (nobytes < 56) {
+            // This happens when we have enough room for all the padding
             // append a 1 bit (and seven 0 bits to make a full byte)
-            B->bytes[nobytes++] = 0x80; // in bits: 10000000
+            B->bytes[nobytes] = 0x80; // in bits: 10000000
             // append enough 0 bits, leaving 64 at the end 
-            while (nobytes++ < 56) {
+            for (nobytes++; nobytes < 56; nobytes++) {
                 B->bytes[nobytes] = 0x00; // in bits: 00000000
             }   
             // Check big endian
@@ -50,16 +58,15 @@ int nextBlock(FILE *f, union Block *B, enum Status *S, uint64_t *nobits) {
             // Append a 1 bit (and seven 0 bits to make a full byte.)
             B->bytes[nobytes] = 0x80;
             // Append 0 bits. 
-            while (nobytes++ < 64) {
+            for (nobytes++; nobytes < 64; nobytes++) {
                 B->bytes[nobytes] = 0x00; // in bits: 00000000
             }  
             // Change the status to PAD.
             *S = PAD;
         }
     } else if (*S == PAD) {
-        nobytes = 0;
         // Append 0 bits. 
-        while (nobytes++ < 56) {
+        for (nobytes = 0; nobytes < 56; nobytes++) {
             B->bytes[nobytes] = 0x00; // in bits: 00000000
         }  
         // Append nobits as an integer
