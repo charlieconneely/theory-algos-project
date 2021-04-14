@@ -9,30 +9,38 @@ const int _i = 1;
 
 #define BYTE uint8_t
 #define WORD uint32_t
-#define PF PRIX32
+#define PF PRIx32
 
 #define ROTL(_x, _n) ((_x << _n) | (_x >> ((sizeof(_x)*8) - _n)))
 #define ROTR(_x, _n) ((_x >> _n) | (_x << ((sizeof(_x)*8) - _n)))
+#define SHR(_x, _n) (_x >> _n)
 
 #define CH(_x, _y, _z) ((_x & _y) ^ (~_x & _z))
 #define MAJ(_x, _y, _z) ((_x & _y) ^ (_x & _z) ^ (_y & _z))
-#define SHR(_x, _n) ((_x >> _n))
 
-#define SIG0(x) (ROTR(x,2)^ROTR(x,13)^ROTR(x,22))
-#define SIG1(x) (ROTR(x,6)^ROTR(x,11)^ROTR(x,25))
-#define Sig0(x) (ROTR(x,7)^ROTR(x,18)^SHR(x,3))
-#define Sig1(x) (ROTR(x,17)^ROTR(x,19)^SHR(x,10))
+#define SIG0(_x) (ROTR(_x,2) ^ ROTR(_x,13) ^ ROTR(_x,22))
+#define SIG1(_x) (ROTR(_x,6) ^ ROTR(_x,11) ^ ROTR(_x,25))
+#define Sig0(_x) (ROTR(_x,7) ^ ROTR(_x,18) ^ SHR(_x,3))
+#define Sig1(_x) (ROTR(_x,17) ^ ROTR(_x,19) ^ SHR(_x,10))
 
 // Section 4.2.2
 const WORD K[] = {
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,  0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,  0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,  0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,  0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,  0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,  0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,  0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,  0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+    0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+    0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+    0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+    0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+    0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
 // SHA256 works on blocks of 512 bits 
@@ -56,6 +64,7 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
     size_t nobytes;
 
     if (*S == END) {
+        // Finish.
         return 0;
     } else if (*S == READ) {
         // try to read 64 bytes 
@@ -99,7 +108,7 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
         }  
         // Append nobits as a big endian integer.
         M->sixf[7] = (is_lilendian() ? bswap_64(*nobits) : *nobits);
-        // Change the status to PAD.
+        // Change the status to END.
         *S = END;
     }
     // Swap the byte order of the words if we're little endian.
@@ -119,12 +128,10 @@ int next_hash(union Block *M, WORD H[]) {
     WORD a, b, c, d, e, f, g, h, T1, T2;
 
     // section 6.2.2, part 1
-    for (t = 0; t < 16; t++) {
+    for (t = 0; t < 16; t++) 
         W[t] = M->words[t];
-    }
-    for (t = 16; t < 64; t++) {
-        Sig1(W[t-2]) + W[t-7] + Sig0(W[t-15]) + W[t-16];
-    }
+    for (t = 16; t < 64; t++) 
+        W[t] = Sig1(W[t-2]) + W[t-7] + Sig0(W[t-15]) + W[t-16];
 
     // section 6.2.2, part 2
     a = H[0]; b = H[1]; c = H[2]; d = H[3];
