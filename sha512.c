@@ -165,6 +165,20 @@ int next_hash(union Block *M, WORD H[]) {
     return 0;
 }
 
+int sha512(FILE *f, WORD H[]) {
+    union Block M;
+    // Total number of bits read
+    uint64_t nobits = 0;
+    // Current status of reading input
+    enum Status S = READ;
+    // loop through the (preprocessed) blocks from input 
+    while(nextBlock(f, &M, &S, &nobits)) {
+        next_hash(&M, H);
+    }
+
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     // Section 5.3.5
