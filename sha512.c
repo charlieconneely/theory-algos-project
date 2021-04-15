@@ -56,8 +56,58 @@ union Block {
     int64_t sixf[16];
 };
 
+// For keeping track of where we are with the input message/padding
+enum Status {
+    READ, PAD, END
+};
+
+int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) { 
+    size_t nobytes;
+    return 0;
+}
+
+int next_hash(union Block *M, WORD H[]) {
+    // Message schedule, Section 6.2.2
+    WORD W[80];
+    int t;
+
+    // Temporary variables.
+    WORD a, b, c, d, e, f, g, h, T1, T2;
+
+    // Section 6.4.2 part 1
+    for (t = 0; t < 16; t++) {
+        W[t] = M->words[t];
+    }
+    for (t = 16; t < 80; t++) {
+        W[t] = Sig1(W[t-2]) + W[t-7] + Sig0(W[t-15]) + W[t-16];
+    }
+
+    // Section 6.4.2 part 2
+    a = H[0]; b = H[1]; c = H[2]; d = H[3];
+    e = H[4]; f = H[5]; g = H[6]; h = H[7];
+
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
+    // Section 5.3.5
+    WORD H[] = {
+        0x6a09e667f3bcc908,
+        0xbb67ae8584caa73b,
+        0x3c6ef372fe94f82b,
+        0xa54ff53a5f1d36f1,
+        0x510e527fade682d1,
+        0x9b05688c2b3e6c1f,
+        0x1f83d9abfb41bd6b,
+        0x5be0cd19137e2179
+    };
+
+    // File pointer for reading
+    FILE *f;
+    // Open file from cmd line for reading
+    f = fopen(argv[1], "r");
+
 
     return 0;
 }
