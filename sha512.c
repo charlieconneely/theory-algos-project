@@ -9,10 +9,10 @@ const int _i = 1;
 
 #define BYTE uint8_t
 #define WORD uint64_t
-#define WLEN 64
+#define PF PRIx64
 
-#define ROTL(_x,_n) ((_x << _n) | (_x >> (WLEN - _n)))
-#define ROTR(_x,_n) ((_x >> _n) | (_x << (WLEN - _n)))
+#define ROTL(_x,_n) ((_x << _n) | (_x >> ((sizeof(_x)*8) - _n)))
+#define ROTR(_x,_n) ((_x >> _n) | (_x << ((sizeof(_x)*8) - _n)))
 #define SHR(_x,_n) (_x >> _n)
 
 #define CH(_x,_y,_z) ((_x & _y) ^ (~_x & _z))
@@ -23,7 +23,7 @@ const int _i = 1;
 #define Sig0(_x) (ROTR(_x,1)^ROTR(_x,8)^SHR(_x,7))
 #define Sig1(_x) (ROTR(_x,19)^ROTR(_x,61)^SHR(_x,6))
 
-const WORD K[] = {
+const WORD K[80] = {
     0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
     0x3956c25bf348b538, 0x59f111f1b605d019, 0x923f82a4af194f9b, 0xab1c5ed5da6d8118,
     0xd807aa98a3030242, 0x12835b0145706fbe, 0x243185be4ee4b28c, 0x550c7dc3d5ffb4e2,
@@ -86,6 +86,7 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
             // Check big endian
             // Append nobits as a big endian integer.
             M->sixf[15] = (is_lilendian() ? bswap_64(*nobits) : *nobits); 
+            //M->sixf[15] = *nobits; 
             // Say this is the last block
             *S = END;   
         } else {
@@ -107,14 +108,16 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
         }  
         // Append nobits as a big endian integer.
         M->sixf[15] = (is_lilendian() ? bswap_64(*nobits) : *nobits);
+        //M->sixf[15] = *nobits;
         // Change the status to END.
         *S = END;       
     }
     // Swap the byte order of the words if we're little endian.
+ 
     if (is_lilendian())
-        for (int i = 0; i < 32; i++)
+        for (int i = 0; i < 16; i++)
             M->words[i] = bswap_64(M->words[i]);  
-
+ 
     return 1;
 }
 
@@ -182,7 +185,7 @@ int sha512(FILE *f, WORD H[]) {
 int main(int argc, char *argv[])
 {
     // Section 5.3.5
-    WORD H[] = {
+    WORD H[8] = {
         0x6a09e667f3bcc908,
         0xbb67ae8584caa73b,
         0x3c6ef372fe94f82b,
@@ -196,8 +199,16 @@ int main(int argc, char *argv[])
     // File pointer for reading
     FILE *f;
     // Open file from cmd line for reading
-    f = fopen(argv[1], "r");
+    f = fopen(argv[1], "r");    // calculate the sha256 of f
+    
+    sha512(f, H);
 
+    // Print the final SHA512 hash
+    for (int i = 0; i < 8; i++) 
+        printf("%16" PF, H[i]);
+    printf("\n");
+
+    fclose(f);
 
     return 0;
 }
