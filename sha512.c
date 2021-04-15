@@ -63,11 +63,63 @@ enum Status {
 
 int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) { 
     size_t nobytes;
-    return 0;
+
+    if (*S == END) {
+        // Finish.
+        return 0;
+    } else if (*S == READ) {
+        // try to read 128 bytes 
+        nobytes = fread(M->bytes, 1, 128, f);
+        if (nobytes == 128) {
+            // This happens when we can read 128 bytes from f.
+            // Do nothing.
+        } 
+        // Enough room for padding
+        else if (nobytes < 120) {
+            // This happens when we have enough room for all the padding
+            // append a 1 bit (and seven 0 bits to make a full byte)
+            M->bytes[nobytes] = 0x80; // in bits: 10000000        
+            // append enough 0 bits, leaving 128 at the end 
+            for (nobytes++; nobytes < 120; nobytes++) {
+                M->bytes[nobytes] = 0x00; // in bits: 00000000
+            } 
+            // Check big endian
+            // Append nobits as a big endian integer.
+            M->sixf[15] = (is_lilendian() ? bswap_64(*nobits) : *nobits); 
+            // Say this is the last block
+            *S = END;   
+        } else {
+            // Gotten to the end of the input message.
+            // Not enough room in this block for all the padding.
+            // Append a 1 bit (and seven 0 bits to make a full byte.)
+            M->bytes[nobytes] = 0x80;
+            // Append 0 bits. 
+            for (nobytes++; nobytes < 128; nobytes++) {
+                M->bytes[nobytes] = 0x00; // in bits: 00000000
+            }  
+            // Change the status to PAD.
+            *S = PAD;          
+        }
+    } else if (*S == PAD) {
+         // Append 0 bits. 
+        for (nobytes = 0; nobytes < 120; nobytes++) {
+            M->bytes[nobytes] = 0x00; // in bits: 00000000
+        }  
+        // Append nobits as a big endian integer.
+        M->sixf[15] = (is_lilendian() ? bswap_64(*nobits) : *nobits);
+        // Change the status to END.
+        *S = END;       
+    }
+    // Swap the byte order of the words if we're little endian.
+    if (is_lilendian())
+        for (int i = 0; i < 32; i++)
+            M->words[i] = bswap_64(M->words[i]);  
+
+    return 1;
 }
 
 int next_hash(union Block *M, WORD H[]) {
-    // Message schedule, Section 6.2.2
+    // Message schedule, Section 6.4.2
     WORD W[80];
     int t;
 
