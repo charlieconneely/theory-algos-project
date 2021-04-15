@@ -12,6 +12,7 @@ int main(int argc, char **argv)
   // from executing more than one option
   int aflag = 0;
   int bflag = 0;
+  int hflag = 0;
   char *cvalue = NULL;
   int index;
   int c;
@@ -21,7 +22,7 @@ int main(int argc, char **argv)
   opterr = 0;
 
   // getopt will return -1 when no more arguments are present
-  while((c = getopt(argc, argv, "abc:")) != -1)
+  while((c = getopt(argc, argv, "abhc:")) != -1)
     switch(c)
       {
       case 'a':
@@ -29,6 +30,9 @@ int main(int argc, char **argv)
         break;
       case 'b':
         bflag = 1;
+        break;
+      case 'h':
+        hflag = 1;
         break;
       case 'c':
         // optarg - option argument (set by getopt)
@@ -38,19 +42,17 @@ int main(int argc, char **argv)
         // optopt stores an unknown option character which was passed in as an argument
         if(optopt == 'c')
           fprintf(stderr, "Option -%c requires an argument.\n", optopt);
-        else if(isprint (optopt))
+        else if(isprint(optopt))
           fprintf(stderr, "Unknown option `-%c'.\n", optopt);
         else
-          fprintf(stderr,
-                   "Unknown option character `\\x%x'.\n",
-                   optopt);
+          fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
         return 1;
       default:
         abort();
       }
 
-  printf("aflag = %d, bflag = %d, cvalue = %s\n",
-          aflag, bflag, cvalue);
+  printf("aflag = %d, bflag = %d, hvalue = %d cvalue = %s\n",
+          aflag, bflag, hflag, cvalue);
 
   // optind - represents index of argument to be processed
   // used to determine where non-option arguments begin
@@ -58,3 +60,10 @@ int main(int argc, char **argv)
     printf("Non-option argument %s\n", argv[index]);
   return 0;
 }
+
+// int main(int argc, char *argv[]) {
+//   for (int i = 0; i < argc; i++) {
+//     printf("%s\n", argv[i]);
+//   }
+//   return 0;
+// }

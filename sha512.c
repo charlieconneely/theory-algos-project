@@ -184,6 +184,20 @@ int sha512(FILE *f, WORD H[]) {
 
 int main(int argc, char *argv[])
 {
+    if (argc == 1) {
+        printf("No arguments provided. Run --help for instructions.\n");
+        return 0;
+    }
+
+    FILE *f;
+    // Open file from cmd line for reading
+    if (f = fopen(argv[1], "r")){
+        printf("File exists.\n");
+    } else {
+        printf("File does not exist.\n");
+        return 0;
+    }
+
     // Section 5.3.5
     WORD H[8] = {
         0x6a09e667f3bcc908,
@@ -195,11 +209,6 @@ int main(int argc, char *argv[])
         0x1f83d9abfb41bd6b,
         0x5be0cd19137e2179
     };
-
-    // File pointer for reading
-    FILE *f;
-    // Open file from cmd line for reading
-    f = fopen(argv[1], "r");    // calculate the sha256 of f
     
     sha512(f, H);
 
