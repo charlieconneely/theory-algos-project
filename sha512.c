@@ -70,6 +70,8 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
     } else if (*S == READ) {
         // try to read 128 bytes 
         nobytes = fread(M->bytes, 1, 128, f);
+        // calculate the total bits read so far 
+        *nobits = *nobits + (8 * nobytes);
         if (nobytes == 128) {
             // This happens when we can read 128 bytes from f.
             // Do nothing.
@@ -85,8 +87,7 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
             } 
             // Check big endian
             // Append nobits as a big endian integer.
-            M->sixf[15] = (is_lilendian() ? bswap_64(*nobits) : *nobits); 
-            //M->sixf[15] = *nobits; 
+            M->sixf[15] = (is_lilendian() ? bswap_64(*nobits) : *nobits);  
             // Say this is the last block
             *S = END;   
         } else {
@@ -108,7 +109,6 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
         }  
         // Append nobits as a big endian integer.
         M->sixf[15] = (is_lilendian() ? bswap_64(*nobits) : *nobits);
-        //M->sixf[15] = *nobits;
         // Change the status to END.
         *S = END;       
     }
@@ -156,14 +156,14 @@ int next_hash(union Block *M, WORD H[]) {
     }
 
     // Section 6.4.2 part 4
-    H[0] = a + H[0];
-    H[1] = b + H[1];
-    H[2] = c + H[2];
-    H[3] = d + H[3];
-    H[4] = e + H[4];
-    H[5] = f + H[5];
-    H[6] = g + H[6];
-    H[7] = h + H[7];
+    H[0] += a;
+    H[1] += b;
+    H[2] += c;
+    H[3] += d;
+    H[4] += e;
+    H[5] += f;
+    H[6] += g;
+    H[7] += h;
 
     return 0;
 }
