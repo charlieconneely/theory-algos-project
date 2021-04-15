@@ -86,6 +86,30 @@ int next_hash(union Block *M, WORD H[]) {
     a = H[0]; b = H[1]; c = H[2]; d = H[3];
     e = H[4]; f = H[5]; g = H[6]; h = H[7];
 
+    // Section 6.4.2 part 3
+    for (t = 0; t < 80; t++) {
+        T1 = h + SIG1(e) + CH(e,f,g) + K[t] + W[t];
+        T2 = SIG0(a) + MAJ(a,b,c);
+        h = g;
+        g = f;
+        f = e;
+        e = d + T1;
+        d = c;
+        c = b;
+        b = a;
+        a = T1 + T2;
+    }
+
+    // Section 6.4.2 part 4
+    H[0] = a + H[0];
+    H[1] = b + H[1];
+    H[2] = c + H[2];
+    H[3] = d + H[3];
+    H[4] = e + H[4];
+    H[5] = f + H[5];
+    H[6] = g + H[6];
+    H[7] = h + H[7];
+
     return 0;
 }
 
