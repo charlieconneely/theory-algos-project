@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+// getopt 
+#include <stdlib.h>
+#include <ctype.h>
+#include <unistd.h>
+
 // Endianess. Resource:
 // https://developer.ibm.com/articles/au-endianc/
 #include<byteswap.h>
@@ -46,7 +51,7 @@ const WORD K[80] = {
     0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-// SHA256 works on blocks of 512 bits 
+// SHA512 works on blocks of 1024 bits 
 union Block {
     // 8 x 128 = 1024 - dealing with blocks as bytes 
     BYTE bytes[128];
@@ -182,21 +187,53 @@ int sha512(FILE *f, WORD H[]) {
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     if (argc == 1) {
         printf("No arguments provided. Run --help for instructions.\n");
         return 0;
     }
 
-    FILE *f;
-    // Open file from cmd line for reading
-    if (f = fopen(argv[1], "r")){
-        printf("File exists.\n");
-    } else {
-        printf("File does not exist.\n");
+    int c;
+    int hflag = 0;
+    int vflag = 0;
+    int pflag = 0;
+    char *pathToFile = NULL;
+    while((c = getopt(argc, argv, "hvp:")) != -1) {
+        switch(c) {
+        case 'h':
+            hflag = 1;
+            break;
+        case 'v':
+            vflag = 1;
+            break;
+        case 'p':
+            pathToFile = optarg;
+            break;
+        case '?':
+            if (optopt == 'p') 
+                fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+            else if(isprint(optopt))
+                fprintf(stderr, "Unknown option '-%c'.\n", optopt);
+            else
+                fprintf(stderr, "Unknown option character '\\x%x'.\n", optopt);
+            return 0;
+        default:
+            abort();
+        }
+    }
+
+    if (hflag == 1) {
+        printf("-p    : Prefix to the file path.\n-v -p : Verbose output.\n");
         return 0;
     }
+
+    FILE *f;
+    // Open file from cmd line for reading
+    if (!(f = fopen(pathToFile, "r"))){
+        printf("Invalid entry. Run --help for instructions.\n");
+        return 0;
+    } 
 
     // Section 5.3.5
     WORD H[8] = {
@@ -211,6 +248,12 @@ int main(int argc, char *argv[])
     };
     
     sha512(f, H);
+
+    // Verbose
+    if (vflag) {
+        printf("Input file: %s\n", pathToFile);
+        printf("Resulting SHA512 hash:\n");
+    }
 
     // Print the final SHA512 hash
     for (int i = 0; i < 8; i++) 
