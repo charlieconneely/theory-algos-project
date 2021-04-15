@@ -1,20 +1,27 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+// Endianess. Resource:
+// https://developer.ibm.com/articles/au-endianc/
+#include<byteswap.h>
+const int _i = 1;
+#define is_lilendian() ( (*(char*)&_i) != 0 )
+
+#define BYTE uint8_t
 #define WORD uint64_t
-#define W 64
+#define WLEN 64
 
-#define ROTL(x,n) (x<<n)|(x>>(W-n))
-#define ROTR(x,n) (x>>n)|(x<<(W-n))
-#define SHR(x,n) (x>>n)
+#define ROTL(_x,_n) ((_x << _n) | (_x >> (WLEN - _n)))
+#define ROTR(_x,_n) ((_x >> _n) | (_x << (WLEN - _n)))
+#define SHR(_x,_n) (_x >> _n)
 
-#define CH(x,y,z) (x&y)^(~x&z)
-#define MAJ(x,y,z) (x&y)^(x&z)^(y&z)
+#define CH(_x,_y,_z) ((_x & _y) ^ (~_x & _z))
+#define MAJ(_x,_y,_z) ((_x & _y) ^ (_x & _z) ^ (_y & _z))
 
-#define SIG0(x) ROTR(x,28)^ROTR(x,34)^ROTR(x,39)
-#define SIG1(x) ROTR(x,14)^ROTR(x,18)^ROTR(x,41)
-#define Sig0(x) ROTR(x,1)^ROTR(x,8)^SHR(x,7)
-#define Sig1(x) ROTR(x,19)^ROTR(x,61)^SHR(x,6)
+#define SIG0(_x) (ROTR(_x,28)^ROTR(_x,34)^ROTR(_x,39))
+#define SIG1(_x) (ROTR(_x,14)^ROTR(_x,18)^ROTR(_x,41))
+#define Sig0(_x) (ROTR(_x,1)^ROTR(_x,8)^SHR(_x,7))
+#define Sig1(_x) (ROTR(_x,19)^ROTR(_x,61)^SHR(_x,6))
 
 const WORD K[] = {
     0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
@@ -37,6 +44,16 @@ const WORD K[] = {
     0x06f067aa72176fba, 0x0a637dc5a2c898a6, 0x113f9804bef90dae, 0x1b710b35131c471b,
     0x28db77f523047d84, 0x32caab7b40c72493, 0x3c9ebe0a15c9bebc, 0x431d67c49c100d4c,
     0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
+};
+
+// SHA256 works on blocks of 512 bits 
+union Block {
+    // 8 x 128 = 1024 - dealing with blocks as bytes 
+    BYTE bytes[128];
+    // 64 x 16 = 1024 - dealing with blocks as words 
+    WORD words[16];
+    // 64 x 16 = 1024 - dealing with last 64 bits of last block
+    int64_t sixf[16];
 };
 
 int main(int argc, char *argv[])
