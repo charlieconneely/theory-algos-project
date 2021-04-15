@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 
     // Print the final SHA512 hash
     for (int i = 0; i < 8; i++) 
-        printf("%16" PF, H[i]);
+        printf("%016" PF, H[i]);
     printf("\n");
 
     fclose(f);
