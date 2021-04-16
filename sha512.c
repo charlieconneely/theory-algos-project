@@ -217,7 +217,7 @@ int handleArguments(int vflag, char *path) {
     // Open file from cmd line for reading.
     // If can't open file - print message and break.
     if (!(f = fopen(path, "r"))){
-        printf("Invalid file: %s. Run --help for instructions.\n", path);
+        printf("Invalid file: %s. Run -h for help.\n", path);
         return 0;
     }
     // Verbose output.
@@ -232,20 +232,23 @@ int handleArguments(int vflag, char *path) {
 int main(int argc, char **argv)
 {
     if (argc == 1) {
-        printf("No arguments provided. Run --help for instructions.\n");
+        printf("No arguments provided. Run -h for help.\n");
         return 0;
     }
-    
+
     int c;
     int hflag = 0;
     int vflag = 0;
     int pflag = 0;
+    int arg_provided = 0;
     
     while((c = getopt(argc, argv, "hvp:")) != -1) {
+        // Denote that one of '-h -v -p' was entered.
+        arg_provided = 1;
         switch(c) {
         case 'h':
-            printf("-p    : Prefix to the file path.\n-v -p : Verbose output.\n");
-            return 0;
+            hflag = 1;
+            break;
         case 'v':
             vflag = 1;
             break;
@@ -270,6 +273,12 @@ int main(int argc, char **argv)
             abort();
         }
     }
+
+    // Check if no arguments (-h -v -p) were provided. 
+    if (!arg_provided) 
+        printf("Run -h for help.\n");
+    if (hflag)
+        printf("-p    : Prefix to the file path.\n-v -p : Verbose output.\n");
 
     return 0;
 }
