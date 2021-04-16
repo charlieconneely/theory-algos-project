@@ -1,12 +1,18 @@
 #!/bin/bash
 
-echo "Checking file test1.txt."   
-expec="$(sha512sum TestFiles/test1.txt)"
-myout="$(./sha512 -p TestFiles/test1.txt)  TestFiles/test1.txt"
-echo "Expected: " $expec
-echo "Output:   " $myout
-if [[ $myout == $expec ]]; then
-    echo "Pass"
-else
-    echo "Fail"
-fi
+# Store all test files in array
+files="$(ls TestFiles)"
+
+# Loop through each file and test sha512 output
+for t in ${files[@]}; do
+    echo "Checking file $t"   
+    expec="$(sha512sum TestFiles/$t)"
+    myout="$(./sha512 -p TestFiles/$t)  TestFiles/$t"
+    echo "Expected: " $expec
+    echo "Output:   " $myout
+    if [[ $myout == $expec ]]; then
+        echo "Pass"
+    else
+        echo "Fail"
+    fi
+done
