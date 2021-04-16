@@ -187,54 +187,7 @@ int sha512(FILE *f, WORD H[]) {
     return 0;
 }
 
-int main(int argc, char **argv)
-{
-    if (argc == 1) {
-        printf("No arguments provided. Run --help for instructions.\n");
-        return 0;
-    }
-
-    int c;
-    int hflag = 0;
-    int vflag = 0;
-    int pflag = 0;
-    char *pathToFile = NULL;
-    while((c = getopt(argc, argv, "hvp:")) != -1) {
-        switch(c) {
-        case 'h':
-            hflag = 1;
-            break;
-        case 'v':
-            vflag = 1;
-            break;
-        case 'p':
-            pathToFile = optarg;
-            break;
-        case '?':
-            if (optopt == 'p') 
-                fprintf(stderr, "Option -%c requires an argument.\n", optopt);
-            else if(isprint(optopt))
-                fprintf(stderr, "Unknown option '-%c'.\n", optopt);
-            else
-                fprintf(stderr, "Unknown option character '\\x%x'.\n", optopt);
-            return 0;
-        default:
-            abort();
-        }
-    }
-
-    if (hflag == 1) {
-        printf("-p    : Prefix to the file path.\n-v -p : Verbose output.\n");
-        return 0;
-    }
-
-    FILE *f;
-    // Open file from cmd line for reading
-    if (!(f = fopen(pathToFile, "r"))){
-        printf("Invalid entry. Run --help for instructions.\n");
-        return 0;
-    } 
-
+int processFile(FILE *f) {
     // Section 5.3.5
     WORD H[8] = {
         0x6a09e667f3bcc908,
@@ -249,18 +202,74 @@ int main(int argc, char **argv)
     
     sha512(f, H);
 
-    // Verbose
-    if (vflag) {
-        printf("Input file: %s\n", pathToFile);
-        printf("Resulting SHA512 hash:\n");
-    }
-
     // Print the final SHA512 hash
     for (int i = 0; i < 8; i++) 
         printf("%016" PF, H[i]);
-    printf("\n");
+    printf("\n\n");
 
     fclose(f);
+    return 0;
+}
+
+int handleArguments(int vflag, char *path) {
+    FILE *f;
+    
+    // Open file from cmd line for reading.
+    // If can't open file - print message and break.
+    if (!(f = fopen(path, "r"))){
+        printf("Invalid file: %s. Run --help for instructions.\n", path);
+        return 0;
+    }
+    // Verbose output.
+    if (vflag) {
+        printf("Input file: %s\n", path);
+        printf("Resulting SHA512 hash:\n");
+    }
+    processFile(f);
+    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 1) {
+        printf("No arguments provided. Run --help for instructions.\n");
+        return 0;
+    }
+    
+    int c;
+    int hflag = 0;
+    int vflag = 0;
+    int pflag = 0;
+    
+    while((c = getopt(argc, argv, "hvp:")) != -1) {
+        switch(c) {
+        case 'h':
+            printf("-p    : Prefix to the file path.\n-v -p : Verbose output.\n");
+            return 0;
+        case 'v':
+            vflag = 1;
+            break;
+        case 'p':
+            // Check for additional file arguments.
+            optind--;
+            int i = 0;
+            for(;optind < argc && *argv[optind] != '-'; optind++){   
+                handleArguments(vflag, argv[optind]);
+                i++;
+            }
+            break;
+        case '?':
+            if (optopt == 'p') 
+                fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+            else if(isprint(optopt))
+                fprintf(stderr, "Unknown option '-%c'.\n", optopt);
+            else
+                fprintf(stderr, "Unknown option character '\\x%x'.\n", optopt);
+            return 0;
+        default:
+            abort();
+        }
+    }
 
     return 0;
 }
