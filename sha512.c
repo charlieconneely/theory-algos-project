@@ -205,7 +205,7 @@ int processFile(FILE *f) {
     // Print the final SHA512 hash
     for (int i = 0; i < 8; i++) 
         printf("%016" PF, H[i]);
-    printf("\n\n");
+    printf("\n");
 
     fclose(f);
     return 0;
