@@ -7,9 +7,43 @@
 * **`tests.sh`**: Bash code which loops through the `/TestFiles` directory and processes each file using the `sha512` executable, comparing the resulting hash digest with that of the built-in `sha512sum` function. After each iteration, the result will be echo'd to the command line indicating a *Pass* or *Fail*.   
 * **`sha512.c`**: Source code, written in C, which performs all aspects of the SHA512 algorithm on a file which is passed in as a command line argument.  
 
-### **Compilation/Test Instructions**
-...
 
+
+***
+### **Compilation/Test Instructions**
+**Compilation/Testing:** <br>
+To create the necessary sha512 executable run:
+```bash
+make
+```
+
+To remove all executables from the repository run:
+```bash
+make clean
+```
+
+To test the program against files in the `TestFiles` directory, run:
+```bash
+make test
+```
+**Running the program:** <br>
+After calling `make`, to execute the sha512 algorithm against a file: 
+```bash
+./sha512 -p path/toFile.txt
+```
+
+To caculate the hash digest of multiple files:
+```bash
+./sha512 -p file1.txt file2.txt pathTo/file3.txt
+```
+
+For a more descriptive output, run:
+```bash
+./sha512 -v -p file.txt
+```
+
+
+***
 ### **What is the SHA512 algorithm?**
 The SHA512 algorithm is a member of a family of cryptographic functions which are designed to protect data. Using *bitwise operations*, *modular additions*, and *compression functions*, the SHA512 algorithm will transform input data into a respective hash. This hash is a collection of bits whose length, in the case of SHA512, is a multiple of 512. <br>
 The point of algorithms such as this, is that they are *one way*. For any given hash value, to compute it's respective input (if it is unknown) would be almost impossible and extremely costly. <br>
