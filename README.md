@@ -1,7 +1,11 @@
 ## Charlie Conneely - G00348887 - Theory of Algorithms Project 20/21
 
 ### **Repo Contents**
-...
+* **`/LabExercises`**: Folder containing all C programs illustrating different aspects of the SHA process.
+* **`/TestFiles`**: Folder containing all .txt files which are used to test the SHA512 program. 
+* **`Makefile`**: File containing all make commands (more info under *Compilation/Test Instructions*).
+* **`tests.sh`**: Bash code which loops through the `/TestFiles` directory and processes each file using the `sha512` executable, comparing the resulting hash digest with that of the built-in `sha512sum` function. After each iteration, the result will be echo'd to the command line indicating a *Pass* or *Fail*.   
+* **`sha512.c`**: Source code, written in C, which performs all aspects of the SHA512 algorithm on a file which is passed in as a command line argument.  
 
 ### **Compilation/Test Instructions**
 ...
