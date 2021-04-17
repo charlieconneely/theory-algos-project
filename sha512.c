@@ -16,7 +16,6 @@ const int _i = 1;
 #define WORD uint64_t
 #define PF PRIx64
 
-#define ROTL(_x,_n) ((_x << _n) | (_x >> ((sizeof(_x)*8) - _n)))
 #define ROTR(_x,_n) ((_x >> _n) | (_x << ((sizeof(_x)*8) - _n)))
 #define SHR(_x,_n) (_x >> _n)
 

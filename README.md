@@ -10,8 +10,8 @@
 
 
 ***
-### **Compilation/Test Instructions**
-**Compilation/Testing:** <br>
+<!-- ## **Compilation/Test Instructions** -->
+### **Compilation/Testing:** 
 To create the necessary sha512 executable run:
 ```bash
 make
@@ -26,7 +26,7 @@ To test the program against files in the `TestFiles` directory, run:
 ```bash
 make test
 ```
-**Running the program:** <br>
+### **Running the program:** 
 After calling `make`, to execute the sha512 algorithm against a file: 
 ```bash
 ./sha512 -p path/toFile.txt
