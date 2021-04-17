@@ -1,6 +1,6 @@
 # All executables.
 LABDIR=LabExercises
-EXECS=sha512 $(LABDIR)/bitoperations $(LABDIR)/emptyexec $(LABDIR)/getoptPractice $(LABDIR)/sha256 $(LABDIR)/shaFunctions
+EXECS=sha512 $(LABDIR)/bitoperations $(LABDIR)/emptyexec $(LABDIR)/getoptPractice $(LABDIR)/sha256 $(LABDIR)/shaFunctions $(LABDIR)/preproc
 
 # Recreate sha512 executable
 sha512: sha512.c
