@@ -1,7 +1,5 @@
 #include <stdio.h>
-#include <inttypes.h>
-
-// getopt 
+#include <inttypes.h> 
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
@@ -117,7 +115,6 @@ int nextBlock(FILE *f, union Block *M, enum Status *S, uint64_t *nobits) {
         *S = END;       
     }
     // Swap the byte order of the words if we're little endian.
- 
     if (is_lilendian())
         for (int i = 0; i < 16; i++)
             M->words[i] = bswap_64(M->words[i]);  
