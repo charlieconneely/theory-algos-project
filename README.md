@@ -54,14 +54,31 @@ The general procedure of the Secure Hash Algorithm remains the same across most 
 ### **How does SHA-512 work?** 
 There are two main stages in SHA-512. I will briefly describe both stages here, as putting the entire process into perspective will make it easier to answer particular questions later on.   
 **Stage 1: Preprocessing** 
-* **Padding the message**: 
+- **Padding the message**: 
 This initial step involves converting the input file into binary form and ensuring that the message length in bits is a mulitple of 1024. First, the end of the binary equivalent message is appended with the bit "1", followed by the bit length of the original message. To ensure that the final message length is a multiple of 1024, the necessary number of "0" bits is padded between the initial "1" and the original message length at the end. 
-* **Parsing the message**:
+- **Parsing the message**:
 At this stage, the message, along with it's padding, is parsed into _N_ 1024 bit blocks denoted as M1, M2... MN. These message blocks are then subclassified further into sixteen 64-bit words denoted as M0(i), M1(i)... M15(i), where _i_ represents a 1024 bit message block.  
-* **Setting the initial hash value**:
+- **Setting the initial hash value**:
 Next, the initial value of _H_ (an array of eight 64-bit words) must be set in hex. These eight words represent the "first sixty-four bits of the fractional parts of the square roots of the first eight prime numbers" [1], and after the computation in stage 2, will represent our final message digest.
 
-**Stage 2: Hash Computation** 
+**Stage 2: Hash Computation** <br>
+The computation stage consists of looping through each 1024-bit block and parsing it into 64-bit chunks, and performing the following operations on each chunk: <br> 
+- Store the current chunk Mt(i) in the first sixteen positions of a unsigned 64-bit integer array called _W_ that has a total size of eighty. The remaining positions in this array (16-79) are computed by performing Sig0 and Sig1 bit operations on some of the other values already stored within the _W_ array. 
+- We then initialise the eight working variables _a_ to _h_ with the corresponding values of H[0] to H[7]. We also initialise two more uint64_t variables _T1_ and _T2_.
+- Next, inside a for loop running eighty times, the _T1_ and _T2_ variables are set as the result of a collection of bit operations performed on other variables _a_ - _h_. While the remaining working variables are swapped around, ending with the value of _a_ being set to _T1 + T2_.
+- After all of this swapping and altering has finished, each of the hash values are incremented with one of the variables as follows:
+```
+H[0] += a;
+H[1] += b;
+H[2] += c;
+H[3] += d;
+H[4] += e;
+H[5] += f;
+H[6] += g;
+H[7] += h;
+```
+- After the final 64-bit word in the final 1024-bit block has been processed, the final values in the _H_ array represent the message digest. 
+
 
 ### **Why is it important?**
 Hashing algorithms such as SHA-512 serve many purposes. For example, passwords are often stored in a database as their hash values, meaning that if someone were to gain access to the database, it would be almost impossible to compute the original passwords. Additionaly, since a small change in input can have drastic changes in the respective hash ouput, tampering in files can easily be detected. [2] <br>
