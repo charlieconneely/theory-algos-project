@@ -8,45 +8,11 @@ This repository contains a C program which can peform the SHA-512 algorithm on a
 - **`sha512.c`**: Source code, written in C, which performs all aspects of the SHA-512 algorithm on a file which is passed in as a command line argument.  
 
 ***
-### **Compilation/Testing:** 
-To create the necessary sha512 executable, run:
-```
-make
-```
-
-To test the program against files in the `TestFiles` directory, run:
-```
-make test
-```
-
-To remove all executables from the repository, run:
-```
-make clean
-```
-### **Running the program:** 
-After calling `make`, to execute the sha512 algorithm against a file: 
-```
-./sha512 -p path/toFile.txt
-```
-
-To calculate the hash digest of multiple files:
-```
-./sha512 -p file1.txt file2.txt pathTo/file3.txt
-```
-
-For a more descriptive output, run:
-```
-./sha512 -v -p file.txt
-```
-
-
-***
-
 
 ### **What is the SHA512 algorithm?**
 The SHA-512 algorithm is a member of a larger family of cryptographic which use variations of the S.H.A (Secure Hash Algorithm). Using _bitwise operations_, _modular additions_, and _compression functions_, the SHA algorithm will protect data by transforming it into a fixed-length hash. This hash, in the case of SHA-512, is 512 bits in length. <br>
-The most important feature of the Secure Hash Algorithm is that it is _one way_. For any given hash value, to compute it's respective input (if it is unknown) would be almost impossible and extremely costly. <br>
-The general procedure of the Secure Hash Algorithm remains the same across most variations (SHA-1, SHA-256, SHA-512, etc.) However, there are a few elements of the SHA-512 algorithm which differ: 
+The most important feature of the Secure Hash Algorithm is that it is _one way_. For any given hash value, to compute it's respective input (if it is unknown) would be almost impossible and extremely costly, this feature is known as **pre-image resistance**. There are two more important features which make SHA-512 secure: **Second pre-image resistance** means that it is extremely difficult to find a _second_ message that hashes to the same output as a given first, and **collision resistance**, which means that it is also extremely difficult to find any two messages that will hash to the same output. <br>
+The general procedure of the Secure Hash Algorithm remains the same across most variations (SHA-1, SHA-256, SHA-512, etc.) However, there are a few elements of the SHA-512 algorithm which differ. Some of these include: 
 - The maximum length of an input message is 2^128, with a fixed output length of 512 bits. 
 - Where other algorithms require constant arrays of 32 bit words, SHA-512 requires constant arrays of 64 bit words.   
 - Bitwise operations such as _SIG-0_ are calculated using different integer values. Also, the _rotate left_ bit operation is not used anywhere in SHA-512.
@@ -81,9 +47,9 @@ H[7] += h;
 
 
 ### **Why is it important?**
-Hashing algorithms such as SHA-512 serve many purposes. For example, passwords are often stored in a database as their hash values, meaning that if someone were to gain access to the database, it would be almost impossible to compute the original passwords. Additionaly, since a small change in input can have drastic changes in the respective hash ouput, tampering in files can easily be detected. [2] <br>
-- Faster on 64 bit machines. 
-- Early SHA algorithms were eventually deemed insecure. The same hasn't happened for SHA-256, but it's better to keep developing more secure algorithms rather than waiting for that to happen.  
+Hashing algorithms such as SHA-512 serve many purposes. For example, passwords are often stored in a database as their hash values, meaning that if some person were to gain access to this data, it would be almost impossible to compute the original passwords. The integrity of countless digital signatures depend entirely on the Secure Hash Algorithm. Additionaly, since a small change in input can have drastic changes in the respective hash ouput, tampering in files can easily be detected.[2]  <br>
+SHA-512, specifically, is an important development on previous SHA editions because it improves both speed and security. The speed increase is due to the fact that SHA-512 processes a larger number of bits per block, and is better suited to 64-bit platforms[4]. <br>
+The increased security comes from both the larger output (x2 that of SHA-256) and the larger potential input. Where the potential combinations of digests was 2^256 for SHA-512, it becomes 2^512 for SHA-512. Although SHA-256 remains unbroken and is a massive improvement on SHA-1, it is still important to develop safer algorithms such as SHA-512 rather than wait for this to happen.  
 
 ***
 ### **Questions**
@@ -93,7 +59,41 @@ Hashing algorithms such as SHA-512 serve many purposes. For example, passwords a
 1. "_How difficult is it to find a hash digest beginning with at least twelve zeros?_"
 
 ***
+
+### **Compilation/Testing:** 
+To create the necessary sha512 executable, run:
+```
+make
+```
+
+To test the program against files in the `TestFiles` directory, run:
+```
+make test
+```
+
+To remove all executables from the repository, run:
+```
+make clean
+```
+
+### **Running the program:** 
+After calling `make`, to execute the sha512 algorithm against a file: 
+```
+./sha512 -p path/toFile.txt
+```
+
+To calculate the hash digest of multiple files:
+```
+./sha512 -p file1.txt file2.txt pathTo/file3.txt
+```
+
+For a more descriptive output, run:
+```
+./sha512 -v -p file.txt
+```
+
 ### **Resources**
 1. [U.S. Department of Commerce - Secure Hash Standard (SHS)](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf)
 1. [Brilliant.org](https://brilliant.org/wiki/secure-hashing-algorithms/)
 1. [Bitwise Operators](https://www.javatpoint.com/bitwise-operator-in-c)
+1. [crypto.stackexchange.com](https://crypto.stackexchange.com/questions/26336/sha-512-faster-than-sha-256)
